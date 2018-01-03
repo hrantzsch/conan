@@ -2,11 +2,12 @@ import os
 
 from conans.client.rest.uploader_downloader import FileDownloader
 from conans.client.tools.files import check_md5, check_sha1, check_sha256, unzip
+from conans.client.tools.gpg import verify_gpg_sig
 from conans.errors import ConanException
 from conans.util.fallbacks import default_output, default_requester
 
 
-def get(url, md5='', sha1='', sha256='', destination=".", filename="", keep_permissions=False,
+def get(url, md5='', sha1='', sha256='', gpg_signature='', gpg_pubkey='', destination=".", filename="", keep_permissions=False,
         pattern=None, requester=None, output=None, verify=True, retry=None, retry_wait=None,
         overwrite=False, auth=None, headers=None):
     """ high level downloader + unzipper + (optional hash checker) + delete temporary zip
@@ -24,6 +25,11 @@ def get(url, md5='', sha1='', sha256='', destination=".", filename="", keep_perm
         check_sha1(filename, sha1)
     if sha256:
         check_sha256(filename, sha256)
+
+    if gpg_signature and gpg_pubkey:
+        verify_gpg_sig(filename, gpg_pubkey, gpg_signature)
+    elif gpg_signature or gpg_pubkey:
+        raise ConanException("must provide both gpg_signature and gpg_pubkey")
 
     unzip(filename, destination=destination, keep_permissions=keep_permissions, pattern=pattern,
           output=output)

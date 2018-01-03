@@ -18,3 +18,5 @@ from .scm import *
 from .system_pm import *
 # noinspection PyUnresolvedReferences
 from .win import *
+# noinspection PyUnresolvedReferences
+from .gpg import *
